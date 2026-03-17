@@ -12,7 +12,7 @@ import java.util.Optional;
 public interface UsuarioRepository extends JpaRepository<Usuario,Long> {
     List<Usuario> findAllByOrderByTotalCapitulosLidosDesc();
 
-    Optional<Usuario> findByEmail(String email);
+   Optional <Usuario> findByEmail(String email);
 
 
 

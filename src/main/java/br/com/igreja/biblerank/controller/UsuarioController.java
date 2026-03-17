@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import java.security.Principal;
 
 @Controller
 public class UsuarioController {
@@ -26,10 +27,27 @@ public class UsuarioController {
                                 @RequestParam int capitulos,
                                 RedirectAttributes attrs) {
         service.registrarLeitura(id, capitulos);
-
-        // Essa é a mensagem que vai aparecer na tela
         attrs.addFlashAttribute("mensagem", "Leitura registrada com sucesso!");
+        return "redirect:/";
+    }
 
+    // NOVO: Exibir Tela de Perfil
+    @GetMapping("/perfil")
+    public String exibirPerfil(Model model, Principal principal) {
+        // Principal é quem o Spring Security diz que está logado (o e-mail dele)
+        String email = principal.getName();
+        Usuario usuario = service.buscarPorEmail(email);
+        model.addAttribute("usuario", usuario);
+        return "perfil";
+    }
+
+    // NOVO: Salvar atualização do Perfil
+    @PostMapping("/perfil/atualizar")
+    public String atualizarPerfil(@ModelAttribute Usuario dadosAtualizados,
+                                  Principal principal,
+                                  RedirectAttributes attrs) {
+        service.atualizarDadosPerfil(principal.getName(), dadosAtualizados);
+        attrs.addFlashAttribute("mensagem", "Perfil atualizado com sucesso!");
         return "redirect:/";
     }
 
@@ -50,5 +68,4 @@ public class UsuarioController {
     public String telaLogin() {
         return "login";
     }
-
 }

@@ -13,11 +13,12 @@ public class UsuarioService {
 
     @Autowired
     private UsuarioRepository repository;
+
     @Autowired
     private PasswordEncoder encoder;
 
     public Usuario salvar(Usuario usuario) {
-        usuario.setSenha(encoder.encode(usuario.getSenha())); // Transforma "123" em "$2a$10$..."
+        usuario.setSenha(encoder.encode(usuario.getSenha()));
         return repository.save(usuario);
     }
 
@@ -26,9 +27,28 @@ public class UsuarioService {
     }
 
     public void registrarLeitura(Long usuarioId, int capitulos){
-            Usuario user = repository.findById(usuarioId).orElseThrow();
-            user.setTotalCapitulosLidos(user.getTotalCapitulosLidos() + capitulos);
-            repository.save(user);
-        }
+        Usuario user = repository.findById(usuarioId).orElseThrow();
+        user.setTotalCapitulosLidos(user.getTotalCapitulosLidos() + capitulos);
+        repository.save(user);
+    }
 
+    // --- NOVOS MÉTODOS PARA O PERFIL ---
+
+    public Usuario buscarPorEmail(String email) {
+        return repository.findByEmail(email).orElse(null);
+    }
+
+    public void atualizarDadosPerfil(String emailOriginal, Usuario novosDados) {
+        Usuario usuario = repository.findByEmail(emailOriginal).orElse(null);
+        if (usuario != null) {
+            usuario.setNome(novosDados.getNome());
+
+            // Só atualiza a foto se o usuário colou um link novo
+            if (novosDados.getFotoUrl() != null && !novosDados.getFotoUrl().isBlank()) {
+                usuario.setFotoUrl(novosDados.getFotoUrl());
+            }
+
+            repository.save(usuario);
+        }
+    }
 }
