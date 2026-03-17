@@ -1,6 +1,7 @@
 package br.com.igreja.biblerank.controller;
 
 import br.com.igreja.biblerank.model.Usuario;
+import br.com.igreja.biblerank.repository.LivroRepository;
 import br.com.igreja.biblerank.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,33 +16,45 @@ public class UsuarioController {
     @Autowired
     private UsuarioService service;
 
-    // Tela Inicial (Ranking)
+    @Autowired
+    private LivroRepository livroRepository;
+
+    // Tela Inicial (Ranking) - CORRIGIDO (Removido o duplicado)
     @GetMapping("/")
     public String index(Model model) {
         model.addAttribute("usuarios", service.obterRanking());
+        // Envia a lista de livros para o Select do HTML
+        model.addAttribute("livros", livroRepository.findAll());
         return "index";
     }
 
+    // Método para Marcar Leitura - ATUALIZADO para receber o livroId
     @PostMapping("/ler")
     public String marcarLeitura(@RequestParam Long id,
+                                @RequestParam Long livroId,
                                 @RequestParam int capitulos,
                                 RedirectAttributes attrs) {
+
+        // Por enquanto, vamos apenas somar os capítulos como você já fazia
+        // No futuro, podemos usar o livroId para dar medalhas por livro concluído!
         service.registrarLeitura(id, capitulos);
+
         attrs.addFlashAttribute("mensagem", "Leitura registrada com sucesso!");
         return "redirect:/";
     }
 
-    // NOVO: Exibir Tela de Perfil
+    // Exibir Tela de Perfil
     @GetMapping("/perfil")
     public String exibirPerfil(Model model, Principal principal) {
-        // Principal é quem o Spring Security diz que está logado (o e-mail dele)
+        if (principal == null) return "redirect:/login";
+
         String email = principal.getName();
         Usuario usuario = service.buscarPorEmail(email);
         model.addAttribute("usuario", usuario);
         return "perfil";
     }
 
-    // NOVO: Salvar atualização do Perfil
+    // Salvar atualização do Perfil
     @PostMapping("/perfil/atualizar")
     public String atualizarPerfil(@ModelAttribute Usuario dadosAtualizados,
                                   Principal principal,

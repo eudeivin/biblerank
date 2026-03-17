@@ -27,6 +27,10 @@
 
         /* Foto na Tabela */
         .table-photo { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; margin-right: 10px; border: 1px solid #ddd; }
+
+        /* Barra de Progresso */
+        .progress { height: 12px; border-radius: 10px; background-color: #e9ecef; margin-top: 5px; }
+        .progress-bar { font-size: 0.7rem; line-height: 12px; font-weight: bold; }
     </style>
 </head>
 <body class="container mt-5">
@@ -37,14 +41,11 @@
         <div>
             <div sec:authorize="isAuthenticated()">
                 Olá, <span class="fw-bold text-primary" sec:authentication="name">Usuário</span>!
-
                 <a th:href="@{/perfil}" class="btn btn-sm btn-info text-white ms-2">Meu Perfil</a>
-
                 <form th:action="@{/logout}" method="post" style="display: inline;">
                     <button type="submit" class="btn btn-sm btn-outline-danger ms-2">Sair</button>
                 </form>
             </div>
-
             <div sec:authorize="!isAuthenticated()">
                 <a href="/login" class="btn btn-sm btn-primary">Entrar</a>
             </div>
@@ -54,7 +55,6 @@
     <div th:if="${mensagem}" class="alert alert-success text-center" th:text="${mensagem}"></div>
 
     <div class="podium" th:if="${not #lists.isEmpty(usuarios)}">
-
         <div class="podium-item second" th:if="${#lists.size(usuarios) >= 2}">
             <div class="photo-container">
                 <img th:src="${usuarios[1].fotoUrl != null && usuarios[1].fotoUrl != '' ? usuarios[1].fotoUrl : 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png'}" alt="2º Lugar">
@@ -87,9 +87,9 @@
         <thead class="table-dark">
         <tr>
             <th>Posição</th>
-            <th>Participante</th>
-            <th>Capítulos</th>
-            <th class="text-center">Ação</th>
+            <th>Participante / Progresso da Bíblia</th>
+            <th>Total Cap.</th>
+            <th class="text-center">Marcar Leitura</th>
         </tr>
         </thead>
         <tbody>
@@ -100,17 +100,33 @@
                 <span th:if="${iter.index == 2}">🥉</span>
                 <span th:text="${iter.index + 1} + 'º'">1º</span>
             </td>
-            <td>
-                <img th:src="${u.fotoUrl != null && u.fotoUrl != '' ? u.fotoUrl : 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png'}" class="table-photo" alt="foto">
-                <span th:text="${u.nome}" class="fw-bold">Nome</span>
+            <td style="min-width: 250px;">
+                <div class="d-flex align-items-center mb-1">
+                    <img th:src="${u.fotoUrl != null && u.fotoUrl != '' ? u.fotoUrl : 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png'}" class="table-photo" alt="foto">
+                    <span th:text="${u.nome}" class="fw-bold">Nome</span>
+                </div>
+                <div class="progress">
+                    <div class="progress-bar bg-success" role="progressbar"
+                         th:style="'width: ' + (${u.totalCapitulosLidos} * 100 / 1189) + '%'"
+                         th:aria-valuenow="${u.totalCapitulosLidos}" aria-valuemin="0" aria-valuemax="1189">
+                    </div>
+                </div>
+                <small class="text-muted" style="font-size: 0.7rem;"
+                       th:text="${#numbers.formatDecimal(u.totalCapitulosLidos * 100.0 / 1189, 1, 1)} + '% concluído'">0%</small>
             </td>
-            <td th:text="${u.totalCapitulosLidos}">0</td>
+            <td th:text="${u.totalCapitulosLidos}" class="fw-bold text-center">0</td>
             <td class="text-center">
                 <div sec:authorize="isAuthenticated()">
                     <form th:if="${#authentication.getPrincipal().getUsername() == u.email}" th:action="@{/ler}" method="post" class="d-flex justify-content-center gap-2">
                         <input type="hidden" name="id" th:value="${u.id}">
-                        <input type="number" name="capitulos" value="1" class="form-control form-control-sm" style="width: 70px;" min="1">
-                        <button type="submit" class="btn btn-sm btn-success">Marcar</button>
+
+                        <select name="livroId" class="form-select form-select-sm" style="width: 130px;" required>
+                            <option value="">Livro...</option>
+                            <option th:each="l : ${livros}" th:value="${l.id}" th:text="${l.nome}"></option>
+                        </select>
+
+                        <input type="number" name="capitulos" value="1" class="form-control form-control-sm" style="width: 60px;" min="1">
+                        <button type="submit" class="btn btn-sm btn-success">Lido!</button>
                     </form>
                     <span th:if="${#authentication.getPrincipal().getUsername() != u.email}" class="text-muted small">Visualização</span>
                 </div>
@@ -125,7 +141,6 @@
     <div class="text-center mt-4">
         <a href="/cadastro" class="btn btn-outline-primary">Novo Participante</a>
     </div>
-
 </div>
 
 </body>
