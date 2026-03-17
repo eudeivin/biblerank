@@ -43,9 +43,10 @@ public class UsuarioService {
         if (usuario != null) {
             usuario.setNome(novosDados.getNome());
 
-            // Só atualiza a foto se o usuário colou um link novo
-            if (novosDados.getFotoUrl() != null && !novosDados.getFotoUrl().isBlank()) {
-                usuario.setFotoUrl(novosDados.getFotoUrl());
+            String url = novosDados.getFotoUrl();
+            // Se o link for esse bugado do Google ou estiver vazio, a gente não salva
+            if (url != null && !url.isBlank() && !url.contains("profile/picture/0")) {
+                usuario.setFotoUrl(url);
             }
 
             repository.save(usuario);
