@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Meu Perfil - BibleRank</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body { background-color: #f8f9fa; }
+        .profile-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-top: 50px;
+        }
+        .profile-img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid #0dcaf0;
+            margin-bottom: 20px;
+            background-color: #eee;
+        }
+    </style>
+</head>
+<body class="container">
+
+<div class="row justify-content-center">
+    <div class="col-md-6 profile-card text-center">
+        <h2 class="mb-4">👤 Editar Meu Perfil</h2>
+
+        <form th:action="@{/perfil/atualizar}" th:object="${usuario}" method="post">
+
+            <div class="mb-3">
+                <img th:src="*{fotoUrl != null && fotoUrl != '' ? fotoUrl : 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png'}"
+                     class="profile-img" alt="Sua Foto">
+            </div>
+
+            <div class="mb-3 text-start">
+                <label class="form-label fw-bold">Seu Nome:</label>
+                <input type="text" th:field="*{nome}" class="form-control" placeholder="Digite seu nome" required>
+            </div>
+
+            <div class="mb-3 text-start">
+                <label class="form-label fw-bold">Link da sua Foto (URL):</label>
+                <input type="text" th:field="*{fotoUrl}" class="form-control"
+                       placeholder="https://exemplo.com/suafoto.jpg">
+                <div class="form-text">Dica: Você pode usar links de fotos do Facebook ou qualquer link de imagem da internet.</div>
+            </div>
+
+            <div class="mb-4 text-start">
+                <label class="form-label fw-bold text-muted">E-mail (Login):</label>
+                <input type="text" th:value="*{email}" class="form-control bg-light" readonly>
+                <input type="hidden" th:field="*{email}"> </div>
+
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-success btn-lg">Salvar Alterações</button>
+                <a href="/" class="btn btn-outline-secondary">Voltar para o Ranking</a>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+</body>
+</html>
