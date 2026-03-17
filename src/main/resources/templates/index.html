@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Ranking Bíblico - Igreja</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body { background-color: #f8f9fa; }
+        .ranking-card { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .nav-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    </style>
+</head>
+<body class="container mt-5">
+
+<div class="ranking-card">
+    <div class="nav-info">
+        <h1>🏆 Ranking Bíblico</h1>
+        <div>
+            <div sec:authorize="isAuthenticated()">
+                Olá, <span class="fw-bold" sec:authentication="name">Usuário</span>!
+                <form th:action="@{/logout}" method="post" style="display: inline;">
+                    <button type="submit" class="btn btn-sm btn-outline-danger ms-2">Sair</button>
+                </form>
+            </div>
+            <div sec:authorize="!isAuthenticated()">
+                <a href="/login" class="btn btn-sm btn-primary">Entrar</a>
+            </div>
+        </div>
+    </div>
+
+    <table class="table table-hover align-middle">
+        <thead class="table-dark">
+        <tr>
+            <th>Posição</th>
+            <th>Nome</th>
+            <th>Capítulos</th>
+            <th class="text-center">Ação</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="u, iter : ${usuarios}">
+            <td>
+                <span th:if="${iter.index == 0}">🥇</span>
+                <span th:if="${iter.index == 1}">🥈</span>
+                <span th:if="${iter.index == 2}">🥉</span>
+                <span th:text="${iter.index + 1} + 'º'">1º</span>
+            </td>
+            <td th:text="${u.nome}" class="fw-bold">Nome</td>
+            <td th:text="${u.totalCapitulosLidos}">0</td>
+            <td class="text-center">
+
+                <div sec:authorize="isAuthenticated()">
+                    <form th:if="${#authentication.name == u.email}" th:action="@{/ler}" method="post" class="d-flex justify-content-center gap-2">
+                        <input type="hidden" name="id" th:value="${u.id}">
+                        <input type="number" name="capitulos" value="4" class="form-control form-control-sm" style="width: 70px;" min="1">
+                        <button type="submit" class="btn btn-sm btn-success">Marcar</button>
+                    </form>
+
+                    <span th:if="${#authentication.name != u.email}" class="text-muted small">Visualização</span>
+                </div>
+
+                <div sec:authorize="!isAuthenticated()">
+                    <small class="text-muted">Faça login para marcar</small>
+                </div>
+
+            </td>
+        </tr>
+        </tbody>
+        <div th:if="${mensagem}" class="alert alert-success text-center" th:text="${mensagem}"></div>
+    </table>
+
+    <div class="text-center mt-4">
+        <a href="/cadastro" class="btn btn-outline-primary">Novo Participante</a>
+    </div>
+</div>
+
+</body>
+</html>
