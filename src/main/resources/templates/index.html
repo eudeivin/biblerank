@@ -9,6 +9,24 @@
         body { background-color: #f8f9fa; }
         .ranking-card { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         .nav-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+
+        /* Estilos do Pódio */
+        .podium { display: flex; justify-content: center; align-items: flex-end; gap: 15px; margin: 30px 0; padding-bottom: 20px; border-bottom: 1px solid #eee; }
+        .podium-item { text-align: center; display: flex; flex-direction: column; align-items: center; transition: transform 0.3s; }
+        .podium-item:hover { transform: translateY(-5px); }
+        .photo-container { border-radius: 50%; overflow: hidden; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.2); background: #eee; }
+        .photo-container img { width: 100%; height: 100%; object-fit: cover; }
+
+        .first .photo-container { width: 130px; height: 130px; border: 4px solid #FFD700; }
+        .second .photo-container { width: 100px; height: 100px; border: 4px solid #C0C0C0; }
+        .third .photo-container { width: 90px; height: 90px; border: 4px solid #CD7F32; }
+
+        .badge-rank { position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); background: #333; color: white; padding: 2px 10px; border-radius: 15px; font-weight: bold; font-size: 0.8rem; }
+        .podium-name { font-weight: bold; margin-top: 12px; margin-bottom: 0; font-size: 0.9rem; }
+        .podium-points { font-size: 0.8rem; color: #666; }
+
+        /* Foto na Tabela */
+        .table-photo { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; margin-right: 10px; border: 1px solid #ddd; }
     </style>
 </head>
 <body class="container mt-5">
@@ -29,11 +47,43 @@
         </div>
     </div>
 
+    <div th:if="${mensagem}" class="alert alert-success text-center" th:text="${mensagem}"></div>
+
+    <div class="podium" th:if="${not #lists.isEmpty(usuarios)}">
+
+        <div class="podium-item second" th:if="${#lists.size(usuarios) >= 2}">
+            <div class="photo-container">
+                <img th:src="${usuarios[1].fotoUrl}" alt="2º Lugar">
+                <div class="badge-rank">2º</div>
+            </div>
+            <p class="podium-name" th:text="${usuarios[1].nome}">Nome</p>
+            <p class="podium-points" th:text="${usuarios[1].totalCapitulosLidos + ' Cap.'}"></p>
+        </div>
+
+        <div class="podium-item first">
+            <div class="photo-container">
+                <img th:src="${usuarios[0].fotoUrl}" alt="1º Lugar">
+                <div class="badge-rank">1º</div>
+            </div>
+            <p class="podium-name" th:text="${usuarios[0].nome}">Nome</p>
+            <p class="podium-points" th:text="${usuarios[0].totalCapitulosLidos + ' Cap.'}"></p>
+        </div>
+
+        <div class="podium-item third" th:if="${#lists.size(usuarios) >= 3}">
+            <div class="photo-container">
+                <img th:src="${usuarios[2].fotoUrl}" alt="3º Lugar">
+                <div class="badge-rank">3º</div>
+            </div>
+            <p class="podium-name" th:text="${usuarios[2].nome}">Nome</p>
+            <p class="podium-points" th:text="${usuarios[2].totalCapitulosLidos + ' Cap.'}"></p>
+        </div>
+    </div>
+
     <table class="table table-hover align-middle">
         <thead class="table-dark">
         <tr>
             <th>Posição</th>
-            <th>Nome</th>
+            <th>Participante</th>
             <th>Capítulos</th>
             <th class="text-center">Ação</th>
         </tr>
@@ -46,28 +96,26 @@
                 <span th:if="${iter.index == 2}">🥉</span>
                 <span th:text="${iter.index + 1} + 'º'">1º</span>
             </td>
-            <td th:text="${u.nome}" class="fw-bold">Nome</td>
+            <td>
+                <img th:src="${u.fotoUrl}" class="table-photo" alt="foto">
+                <span th:text="${u.nome}" class="fw-bold">Nome</span>
+            </td>
             <td th:text="${u.totalCapitulosLidos}">0</td>
             <td class="text-center">
-
                 <div sec:authorize="isAuthenticated()">
-                    <form th:if="${#authentication.name == u.email}" th:action="@{/ler}" method="post" class="d-flex justify-content-center gap-2">
+                    <form th:if="${#authentication.getPrincipal().getUsername() == u.email}" th:action="@{/ler}" method="post" class="d-flex justify-content-center gap-2">
                         <input type="hidden" name="id" th:value="${u.id}">
-                        <input type="number" name="capitulos" value="4" class="form-control form-control-sm" style="width: 70px;" min="1">
+                        <input type="number" name="capitulos" value="1" class="form-control form-control-sm" style="width: 70px;" min="1">
                         <button type="submit" class="btn btn-sm btn-success">Marcar</button>
                     </form>
-
-                    <span th:if="${#authentication.name != u.email}" class="text-muted small">Visualização</span>
+                    <span th:if="${#authentication.getPrincipal().getUsername() != u.email}" class="text-muted small">Visualização</span>
                 </div>
-
                 <div sec:authorize="!isAuthenticated()">
                     <small class="text-muted">Faça login para marcar</small>
                 </div>
-
             </td>
         </tr>
         </tbody>
-        <div th:if="${mensagem}" class="alert alert-success text-center" th:text="${mensagem}"></div>
     </table>
 
     <div class="text-center mt-4">

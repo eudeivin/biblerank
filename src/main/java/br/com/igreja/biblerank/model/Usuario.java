@@ -15,6 +15,8 @@ public class Usuario {
 
     private String nome;
 
+    private String fotoUrl = "https://www.promoview.com.br/uploads/images/unnamed%2819%29.png";
+
     @Column (unique = true)
     private String email;
     private String senha;
