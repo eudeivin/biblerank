@@ -13,13 +13,18 @@ public class Livro {
 
     private String nome;
     private int totalCapitulos;
+    private String testamento; // Faltava esse aqui!
 
-    public String getNome() {
-        return nome;
-    }
+    // Getters e Setters (Necessários para o Spring trabalhar)
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public int getTotalCapitulos() {
-        return totalCapitulos;
-    }
+    public String getNome() { return nome; }
+    public void setNome(String nome) { this.nome = nome; }
 
+    public int getTotalCapitulos() { return totalCapitulos; }
+    public void setTotalCapitulos(int totalCapitulos) { this.totalCapitulos = totalCapitulos; }
+
+    public String getTestamento() { return testamento; }
+    public void setTestamento(String testamento) { this.testamento = testamento; }
 }

@@ -1,5 +1,5 @@
 -- VELHO TESTAMENTO
-INSERT INTO livro (nome, total_capitulos, testamento) VALUES ('Gênesis', 50, 'Velho');
+INSERT INTO livroivro (nome, total_capitulos, testamento) VALUES ('Gênesis', 50, 'Velho');
 INSERT INTO livro (nome, total_capitulos, testamento) VALUES ('Êxodo', 40, 'Velho');
 INSERT INTO livro (nome, total_capitulos, testamento) VALUES ('Levítico', 27, 'Velho');
 INSERT INTO livro (nome, total_capitulos, testamento) VALUES ('Números', 36, 'Velho');
