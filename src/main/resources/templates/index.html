@@ -36,11 +36,15 @@
         <h1>🏆 Ranking Bíblico</h1>
         <div>
             <div sec:authorize="isAuthenticated()">
-                Olá, <span class="fw-bold" sec:authentication="name">Usuário</span>!
+                Olá, <span class="fw-bold text-primary" sec:authentication="name">Usuário</span>!
+
+                <a th:href="@{/perfil}" class="btn btn-sm btn-info text-white ms-2">Meu Perfil</a>
+
                 <form th:action="@{/logout}" method="post" style="display: inline;">
                     <button type="submit" class="btn btn-sm btn-outline-danger ms-2">Sair</button>
                 </form>
             </div>
+
             <div sec:authorize="!isAuthenticated()">
                 <a href="/login" class="btn btn-sm btn-primary">Entrar</a>
             </div>
@@ -53,7 +57,7 @@
 
         <div class="podium-item second" th:if="${#lists.size(usuarios) >= 2}">
             <div class="photo-container">
-                <img th:src="${usuarios[1].fotoUrl}" alt="2º Lugar">
+                <img th:src="${usuarios[1].fotoUrl != null && usuarios[1].fotoUrl != '' ? usuarios[1].fotoUrl : 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png'}" alt="2º Lugar">
                 <div class="badge-rank">2º</div>
             </div>
             <p class="podium-name" th:text="${usuarios[1].nome}">Nome</p>
@@ -62,7 +66,7 @@
 
         <div class="podium-item first">
             <div class="photo-container">
-                <img th:src="${usuarios[0].fotoUrl}" alt="1º Lugar">
+                <img th:src="${usuarios[0].fotoUrl != null && usuarios[0].fotoUrl != '' ? usuarios[0].fotoUrl : 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png'}" alt="1º Lugar">
                 <div class="badge-rank">1º</div>
             </div>
             <p class="podium-name" th:text="${usuarios[0].nome}">Nome</p>
@@ -71,7 +75,7 @@
 
         <div class="podium-item third" th:if="${#lists.size(usuarios) >= 3}">
             <div class="photo-container">
-                <img th:src="${usuarios[2].fotoUrl}" alt="3º Lugar">
+                <img th:src="${usuarios[2].fotoUrl != null && usuarios[2].fotoUrl != '' ? usuarios[2].fotoUrl : 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png'}" alt="3º Lugar">
                 <div class="badge-rank">3º</div>
             </div>
             <p class="podium-name" th:text="${usuarios[2].nome}">Nome</p>
@@ -97,7 +101,7 @@
                 <span th:text="${iter.index + 1} + 'º'">1º</span>
             </td>
             <td>
-                <img th:src="${u.fotoUrl}" class="table-photo" alt="foto">
+                <img th:src="${u.fotoUrl != null && u.fotoUrl != '' ? u.fotoUrl : 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png'}" class="table-photo" alt="foto">
                 <span th:text="${u.nome}" class="fw-bold">Nome</span>
             </td>
             <td th:text="${u.totalCapitulosLidos}">0</td>
@@ -121,6 +125,7 @@
     <div class="text-center mt-4">
         <a href="/cadastro" class="btn btn-outline-primary">Novo Participante</a>
     </div>
+
 </div>
 
 </body>
